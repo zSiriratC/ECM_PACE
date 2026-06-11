@@ -1,0 +1,178 @@
+<%
+  var exportUrl = '/timesheet/export?contractor=' + encodeURIComponent(fContractor) + '&month=' + encodeURIComponent(fMonth) + '&project=' + encodeURIComponent(fProject);
+%>
+<%- include('partials/header') %>
+<div class="page-header">
+  <h2>Timesheet</h2>
+  <p>Monthly contractor timesheet and equipment usage summary</p>
+</div>
+
+<!-- Filters -->
+<div class="card">
+  <div class="card-header"><h3>Filters</h3></div>
+  <div class="form-row">
+    <div class="form-group">
+      <label>Contractor</label>
+      <select id="fCon" onchange="applyTsFilter()">
+        <option value="">All Contractors</option>
+        <% contractors.forEach(function(c) { %>
+          <option value="<%= c.name %>" <%= fContractor === c.name ? 'selected' : '' %>><%= c.name %></option>
+        <% }); %>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Month</label>
+      <select id="fMon" onchange="applyTsFilter()">
+        <option value="">All Months</option>
+        <% months.forEach(function(m) { %>
+          <option value="<%= m %>" <%= fMonth === m ? 'selected' : '' %>><%= m %></option>
+        <% }); %>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Project</label>
+      <select id="fProj" onchange="applyTsFilter()">
+        <option value="">All Projects</option>
+        <% projects.forEach(function(p) { %>
+          <option value="<%= p.id %>" <%= fProject == p.id ? 'selected' : '' %>><%= p.project_no %> - <%= p.title %></option>
+        <% }); %>
+      </select>
+    </div>
+    <div class="form-group" style="align-self:flex-end">
+      <a href="<%= exportUrl %>" class="btn btn-success">Export Excel (CSV)</a>
+    </div>
+  </div>
+</div>
+
+<script>
+function applyTsFilter() {
+  var con = document.getElementById('fCon').value;
+  var mon = document.getElementById('fMon').value;
+  var proj = document.getElementById('fProj').value;
+  window.location.href = '/timesheet?contractor=' + encodeURIComponent(con) + '&month=' + encodeURIComponent(mon) + '&project=' + encodeURIComponent(proj);
+}
+</script>
+
+<!-- Summary Cards -->
+<div class="summary-cards" style="margin-top:16px">
+  <div class="summary-card blue">
+    <div class="label">Total Manhours</div>
+    <div class="value mono"><%= totalMH %></div>
+  </div>
+  <div class="summary-card teal">
+    <div class="label">Estimated Cost (THB)</div>
+    <div class="value mono"><%= totalCost.toLocaleString() %></div>
+  </div>
+  <div class="summary-card orange">
+    <div class="label">Total Equipment Hours</div>
+    <div class="value mono"><%= totalEqHours %></div>
+  </div>
+  <div class="summary-card green">
+    <div class="label">Personnel Count</div>
+    <div class="value mono"><%= mpList.length %></div>
+  </div>
+</div>
+
+<!-- Manpower Summary -->
+<div class="card" style="margin-top:16px">
+  <div class="card-header"><h3>Manpower Summary</h3></div>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Contractor</th>
+          <th>Person Name</th>
+          <th>Position</th>
+          <th>Work Days</th>
+          <th>Off Working</th>
+          <th>Off OT</th>
+          <th>Off Standby</th>
+          <th>On Working</th>
+          <th>On OT</th>
+          <th>On Standby</th>
+          <th>On SB50%</th>
+          <th>Total MH</th>
+          <th>Rate/Hr</th>
+          <th>Est. Cost</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (!mpList.length) { %>
+          <tr><td colspan="14" class="text-center text-muted" style="padding:30px">No manpower data found for the selected filters.</td></tr>
+        <% } %>
+        <% mpList.forEach(function(m) { %>
+          <tr>
+            <td><%= m.contractor %></td>
+            <td><%= m.person_name %></td>
+            <td><%= m.position %></td>
+            <td class="mono"><%= m.work_days %></td>
+            <td class="mono"><%= m.offshore_working %></td>
+            <td class="mono"><%= m.offshore_overtime %></td>
+            <td class="mono"><%= m.offshore_standby %></td>
+            <td class="mono"><%= m.onshore_working %></td>
+            <td class="mono"><%= m.onshore_overtime %></td>
+            <td class="mono"><%= m.onshore_standby %></td>
+            <td class="mono"><%= m.onshore_standby_50 %></td>
+            <td class="mono" style="font-weight:700"><%= m.total_mh %></td>
+            <td class="mono"><%= m.hourly_rate %></td>
+            <td class="mono"><%= m.estimated_cost.toLocaleString() %></td>
+          </tr>
+        <% }); %>
+        <% if (mpList.length) { %>
+          <tr style="background:#e8f5e9;font-weight:700">
+            <td colspan="11" style="text-align:right">Total</td>
+            <td class="mono"><%= totalMH %></td>
+            <td></td>
+            <td class="mono"><%= totalCost.toLocaleString() %></td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Equipment Summary -->
+<div class="card" style="margin-top:16px">
+  <div class="card-header"><h3>Equipment Summary</h3></div>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Equipment</th>
+          <th>Tag</th>
+          <th>Work Days</th>
+          <th>Off Working</th>
+          <th>Off Standby</th>
+          <th>On Working</th>
+          <th>On Standby</th>
+          <th>Total Hours</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (!eqList.length) { %>
+          <tr><td colspan="8" class="text-center text-muted" style="padding:30px">No equipment data found for the selected filters.</td></tr>
+        <% } %>
+        <% eqList.forEach(function(e) { %>
+          <tr>
+            <td><%= e.equipment_name %></td>
+            <td><%= e.equipment_tag %></td>
+            <td class="mono"><%= e.work_days %></td>
+            <td class="mono"><%= e.offshore_working %></td>
+            <td class="mono"><%= e.offshore_standby %></td>
+            <td class="mono"><%= e.onshore_working %></td>
+            <td class="mono"><%= e.onshore_standby %></td>
+            <td class="mono" style="font-weight:700"><%= e.total_hours %></td>
+          </tr>
+        <% }); %>
+        <% if (eqList.length) { %>
+          <tr style="background:#e8f5e9;font-weight:700">
+            <td colspan="7" style="text-align:right">Total</td>
+            <td class="mono"><%= totalEqHours %></td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

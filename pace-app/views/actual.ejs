@@ -1,0 +1,196 @@
+<%
+  var saveUrl = '/actual/save';
+  var addUrl = '/actual/add-row';
+  var completeUrl = '/actual/complete';
+  var deleteBase = '/actual/delete/';
+%>
+<%- include('partials/header') %>
+<div class="page-header">
+  <h2>Project Actual Update</h2>
+  <p>Update actual work quantities and track productivity by scope</p>
+</div>
+
+<div class="filters">
+  <div class="form-group">
+    <label>Project (In Progress only)</label>
+    <select id="jaProj" onchange="window.location.href='/actual?pid=' + this.value">
+      <% projects.forEach(function(p) { %>
+        <option value="<%= p.id %>" <%= selPid == p.id ? 'selected' : '' %>><%= p.project_no %> - <%= p.title %></option>
+      <% }); %>
+    </select>
+  </div>
+</div>
+
+<% if (selProject) { %>
+
+<div class="card">
+  <div class="card-header"><h3><%= selProject.project_no %> &mdash; <%= selProject.title %></h3></div>
+  <div class="form-row" style="padding:12px">
+    <div class="form-group"><label>Company</label><input value="<%= selProject.company || '' %>" readonly></div>
+    <div class="form-group"><label>Job Type</label><input value="<%= selProject.job_type || '' %>" readonly></div>
+    <div class="form-group"><label>Status</label><input value="<%= selProject.status.replace(/_/g,' ') %>" readonly></div>
+    <div class="form-group"><label>Plan Start</label><input value="<%= selProject.plan_start || 'N/A' %>" readonly></div>
+    <div class="form-group"><label>Plan End</label><input value="<%= selProject.plan_end || 'N/A' %>" readonly></div>
+  </div>
+</div>
+
+<div class="summary-cards" style="margin-top:16px">
+  <div class="summary-card blue"><div class="label">Planned MH</div><div class="value mono"><%= totalPlannedMH.toFixed(1) %></div></div>
+  <div class="summary-card teal"><div class="label">Actual MH (All Reports)</div><div class="value mono"><%= projectActualMH %></div></div>
+  <div class="summary-card orange"><div class="label">Completion</div><div class="value mono"><%= completionPct %>%</div></div>
+  <div class="summary-card green"><div class="label">Productivity</div><div class="value mono"><%= overallProductivity %> MH/Unit</div></div>
+  <div class="summary-card"><div class="label">Total Actual Qty</div><div class="value mono"><%= totalActualQty.toFixed(1) %></div></div>
+  <div class="summary-card"><div class="label">Total Item MH</div><div class="value mono"><%= totalActualMH %></div></div>
+</div>
+
+<div class="card" style="margin-top:16px">
+  <div class="card-header"><h3>Actual Work Quantity</h3></div>
+  <div style="padding:8px 12px;font-size:11px;color:#64748b">
+    <strong>Report MH</strong> = sum of manpower hours tagged to this scope in Daily Reports
+  </div>
+  <div style="padding:0 12px 12px">
+    <% if (editable) { %>
+      <%- '<form action="' + saveUrl + '" method="POST" id="saveForm">' %>
+      <input type="hidden" name="project_id" value="<%= selPid %>">
+    <% } %>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Scope</th><th>Item Name</th><th>Unit</th><th>Planned Qty</th>
+            <th>Actual Qty</th><th>Actual MH</th><th>Report MH</th><th>Productivity</th><th>Status</th>
+            <% if (editable) { %><th></th><% } %>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (!actuals.length) { %>
+            <tr><td colspan="10" class="text-center text-muted" style="padding:30px">No items with planned quantity found.</td></tr>
+          <% } %>
+          <%
+            var currentScope = '';
+            var scopeMHShown = {};
+            actuals.forEach(function(a, idx) {
+              var scopeLabel = a.scope_ref || 'Additional';
+              if (scopeLabel !== currentScope) {
+                currentScope = scopeLabel;
+          %>
+            <tr style="background:#e2e8f0;font-weight:700">
+              <td colspan="<%= editable ? 10 : 9 %>">
+                <%= a.item_id ? 'Scope: ' + currentScope : 'Additional Items' %>
+                <% if (a.scope_ref && a.report_mh > 0 && !scopeMHShown[a.scope_ref]) { %>
+                  <span style="float:right;color:#009688;font-size:12px">Scope Report MH: <%= a.report_mh %></span>
+                  <% scopeMHShown[a.scope_ref] = true; %>
+                <% } %>
+              </td>
+            </tr>
+          <% } %>
+            <tr>
+              <td class="mono"><%= a.scope_ref || '' %></td>
+              <td><%= a.item_name %></td>
+              <td><%= a.unit %></td>
+              <td class="mono"><%= (a.planned_qty || 0).toFixed(1) %></td>
+              <% if (editable) { %>
+                <td>
+                  <input type="hidden" name="items[<%= idx %>][id]" value="<%= a.id %>">
+                  <input type="number" name="items[<%= idx %>][actual_qty]" value="<%= a.actual_qty || 0 %>" step="0.1" min="0" style="width:75px" onchange="calcProd(this)">
+                </td>
+                <td>
+                  <input type="number" name="items[<%= idx %>][actual_manhour]" value="<%= a.actual_manhour || 0 %>" step="0.1" min="0" style="width:75px" onchange="calcProd(this)">
+                </td>
+              <% } else { %>
+                <td class="mono"><%= (a.actual_qty || 0).toFixed(1) %></td>
+                <td class="mono"><%= (a.actual_manhour || 0).toFixed(2) %></td>
+              <% } %>
+              <td class="mono" style="color:#009688"><%= a.report_mh > 0 ? a.report_mh : '-' %></td>
+              <td class="mono prod-cell" style="font-weight:700"><%= a.productivity.toFixed(2) %></td>
+              <% if (editable) { %>
+                <td>
+                  <select name="items[<%= idx %>][status]" style="width:85px">
+                    <option value="draft" <%= a.status === 'draft' ? 'selected' : '' %>>Draft</option>
+                    <option value="confirmed" <%= a.status === 'confirmed' ? 'selected' : '' %>>Confirmed</option>
+                  </select>
+                </td>
+                <td>
+                  <% if (!a.item_id) { %>
+                    <%- '<form action="' + deleteBase + a.id + '" method="POST" style="display:inline" onsubmit="return confirm(\'Delete?\')">' %>
+                      <button type="submit" class="btn btn-outline btn-sm" style="color:red">x</button>
+                    <%- '</form>' %>
+                  <% } %>
+                </td>
+              <% } %>
+            </tr>
+          <% }); %>
+
+          <% if (actuals.length) { %>
+            <tr style="background:#e8f5e9;font-weight:700">
+              <td colspan="3" style="text-align:right">Total</td>
+              <td class="mono"><%= totalPlannedQty.toFixed(1) %></td>
+              <td class="mono"><%= totalActualQty.toFixed(1) %></td>
+              <td class="mono"><%= totalActualMH %></td>
+              <td class="mono" style="color:#009688"><%= projectActualMH %></td>
+              <td class="mono"><%= overallProductivity %></td>
+              <td colspan="<%= editable ? 2 : 1 %>"></td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+
+    <% if (editable && actuals.length) { %>
+      <div style="display:flex;gap:12px;margin-top:12px">
+        <button type="submit" class="btn btn-primary" style="flex:1">Save Actual Quantities</button>
+      </div>
+      <%- '</form>' %>
+
+      <%- '<form action="' + completeUrl + '" method="POST" style="margin-top:8px" onsubmit="return confirm(\'Mark this project as COMPLETED? This cannot be undone.\')">' %>
+        <input type="hidden" name="project_id" value="<%= selPid %>">
+        <button type="submit" class="btn btn-success" style="width:100%">&#9989; Complete Project</button>
+      <%- '</form>' %>
+    <% } %>
+  </div>
+</div>
+
+<% if (editable) { %>
+<script>
+function calcProd(el) {
+  var tr = el.closest('tr');
+  var qtyEl = tr.querySelector('[name*="actual_qty"]');
+  var mhEl = tr.querySelector('[name*="actual_manhour"]');
+  var prodCell = tr.querySelector('.prod-cell');
+  if (qtyEl && mhEl && prodCell) {
+    var qty = parseFloat(qtyEl.value) || 0;
+    var mh = parseFloat(mhEl.value) || 0;
+    prodCell.textContent = qty > 0 ? (mh / qty).toFixed(2) : '0.00';
+  }
+}
+</script>
+
+<div class="card" style="margin-top:16px">
+  <div class="card-header"><h3>+ Add New Item</h3></div>
+  <div style="padding:12px">
+    <%- '<form action="' + addUrl + '" method="POST">' %>
+      <input type="hidden" name="project_id" value="<%= selPid %>">
+      <div class="form-row">
+        <div class="form-group"><label>Item Name *</label><input name="item_name" required placeholder="e.g. Additional Welding"></div>
+        <div class="form-group"><label>Unit</label><input name="unit" value="EA"></div>
+        <div class="form-group"><label>Actual Qty</label><input type="number" name="actual_qty" value="0" step="0.1"></div>
+        <div class="form-group"><label>Actual MH</label><input type="number" name="actual_manhour" value="0" step="0.1"></div>
+      </div>
+      <button type="submit" class="btn btn-teal btn-sm">Add Item</button>
+    <%- '</form>' %>
+  </div>
+</div>
+<% } %>
+
+<% } else { %>
+  <div class="card"><div style="padding:40px;text-align:center;color:#888">
+    <% if (!projects.length) { %>
+      No projects in "In Progress" status.
+    <% } else { %>
+      Select a project to update actual quantities.
+    <% } %>
+  </div></div>
+<% } %>
+
+<%- include('partials/footer') %>

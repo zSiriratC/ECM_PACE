@@ -1,0 +1,162 @@
+<%- include('partials/header') %>
+<div class="page-header"><h2>Setup &amp; Master Data</h2><p>Manage all reference data</p></div>
+<% if (!isAdmin) { %><div class="alert alert-info">View only. Admin access required.</div><% } %>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('equipment')">Equipment</button>
+  <button class="tab" onclick="switchTab('contractors')">Contractors</button>
+  <button class="tab" onclick="switchTab('personnel')">Personnel</button>
+  <button class="tab" onclick="switchTab('rates')">Rates</button>
+  <button class="tab" onclick="switchTab('stdmanhour')">Std Manhour</button>
+  <button class="tab" onclick="switchTab('users')">Users</button>
+  <button class="tab" onclick="switchTab('jobtypes')">Job Types</button>
+  <button class="tab" onclick="switchTab('subtypes1')">Sub Types 1</button>
+  <button class="tab" onclick="switchTab('subtypes2')">Sub Types 2</button>
+  <button class="tab" onclick="switchTab('companies')">Companies</button>
+  <button class="tab" onclick="switchTab('positions')">Positions</button>
+  <button class="tab" onclick="switchTab('qps')">Quarter PF</button>
+  <button class="tab" onclick="switchTab('defaultitems')">Default Items</button>
+  <button class="tab" onclick="switchTab('scopeitems')">Scope Items</button>
+</div>
+
+<!-- All forms use JS submit to avoid form tag issues -->
+<div id="tab-equipment" class="tab-content active"><div class="card"><div class="card-header"><h3>Equipment</h3></div>
+<div class="table-wrapper"><table><thead><tr><th>ID</th><th>Name</th><th>Type</th><th>Desc</th><th>Status</th><% if(isAdmin){%><th></th><%}%></tr></thead><tbody>
+<% equipment.forEach(function(e) { %><tr><td class="mono"><%= e.id %></td><td><%= e.name %></td><td><%= e.type %></td><td><%= e.description %></td><td><span class="badge <%= e.is_active?'badge-success':'badge-danger' %>"><%= e.is_active?'Active':'Off' %></span></td>
+<% if(isAdmin){%><td><button class="btn btn-outline btn-sm" style="color:red" onclick="postDel('/setup/equipment/delete/<%= e.id %>')">x</button></td><%}%></tr><% }); %>
+</tbody></table></div>
+<% if(isAdmin){%><div id="frm-equipment" style="padding:12px"><div class="form-row"><div class="form-group"><label>Name *</label><input id="eq-name"></div><div class="form-group"><label>Type</label><input id="eq-type"></div><div class="form-group"><label>Description</label><input id="eq-desc"></div></div><button class="btn btn-teal btn-sm" onclick="postForm('/setup/equipment/save',{name:v('eq-name'),type:v('eq-type'),description:v('eq-desc')})">+ Add</button></div><%}%>
+</div></div>
+
+<div id="tab-contractors" class="tab-content"><div class="card"><div class="card-header"><h3>Contractors</h3></div>
+<div class="table-wrapper"><table><thead><tr><th>ID</th><th>Name</th><th>Company</th><th>Contact</th><th>Phone</th><th>Status</th><% if(isAdmin){%><th></th><%}%></tr></thead><tbody>
+<% contractors.forEach(function(c) { %><tr><td class="mono"><%= c.id %></td><td><%= c.name %></td><td><%= c.company %></td><td><%= c.contact_person %></td><td><%= c.phone %></td><td><span class="badge <%= c.is_active?'badge-success':'badge-danger' %>"><%= c.is_active?'Active':'Off' %></span></td>
+<% if(isAdmin){%><td><button class="btn btn-outline btn-sm" style="color:red" onclick="postDel('/setup/contractor/delete/<%= c.id %>')">x</button></td><%}%></tr><% }); %>
+</tbody></table></div>
+<% if(isAdmin){%><div style="padding:12px"><div class="form-row"><div class="form-group"><label>Name *</label><input id="ct-name"></div><div class="form-group"><label>Company</label><input id="ct-company"></div><div class="form-group"><label>Contact</label><input id="ct-contact"></div><div class="form-group"><label>Phone</label><input id="ct-phone"></div></div><button class="btn btn-teal btn-sm" onclick="postForm('/setup/contractor/save',{name:v('ct-name'),company:v('ct-company'),contact_person:v('ct-contact'),phone:v('ct-phone')})">+ Add</button></div><%}%>
+</div></div>
+
+<div id="tab-personnel" class="tab-content"><div class="card"><div class="card-header"><h3>Contractor Personnel</h3></div>
+<div class="table-wrapper"><table><thead><tr><th>ID</th><th>Contractor</th><th>Person</th><th>Position</th><th>Status</th><% if(isAdmin){%><th></th><%}%></tr></thead><tbody>
+<% contractorPersonnel.forEach(function(p) { %><tr><td class="mono"><%= p.id %></td><td><%= p.contractor_name %></td><td><%= p.person_name %></td><td><%= p.position %></td><td><span class="badge <%= p.is_active?'badge-success':'badge-danger' %>"><%= p.is_active?'Active':'Off' %></span></td>
+<% if(isAdmin){%><td><button class="btn btn-outline btn-sm" style="color:red" onclick="postDel('/setup/personnel/delete/<%= p.id %>')">x</button></td><%}%></tr><% }); %>
+</tbody></table></div>
+<% if(isAdmin){%><div style="padding:12px"><div class="form-row"><div class="form-group"><label>Contractor *</label><select id="ps-ct"><option value="">--</option><% contractors.forEach(function(c){%><option value="<%= c.name %>"><%= c.name %></option><%});%></select></div><div class="form-group"><label>Person Name *</label><input id="ps-name"></div><div class="form-group"><label>Position</label><select id="ps-pos"><option value="">--</option><% positions.forEach(function(p){%><option value="<%= p.name %>"><%= p.name %></option><%});%></select></div></div><button class="btn btn-teal btn-sm" onclick="postForm('/setup/personnel/save',{contractor_name:v('ps-ct'),person_name:v('ps-name'),position:v('ps-pos')})">+ Add</button></div><%}%>
+</div></div>
+
+<div id="tab-rates" class="tab-content"><div class="card"><div class="card-header"><h3>Rates</h3></div>
+<div class="table-wrapper"><table><thead><tr><th>ID</th><th>Contractor</th><th>Position</th><th>Daily</th><th>Hourly</th><th>Currency</th><th>Effective</th><% if(isAdmin){%><th></th><%}%></tr></thead><tbody>
+<% rates.forEach(function(r) { %><tr><td class="mono"><%= r.id %></td><td><%= r.contractor_name %></td><td><%= r.position %></td><td class="mono"><%= r.daily_rate %></td><td class="mono"><%= r.hourly_rate %></td><td><%= r.currency %></td><td><%= r.effective_date %></td>
+<% if(isAdmin){%><td><button class="btn btn-outline btn-sm" style="color:red" onclick="postDel('/setup/rate/delete/<%= r.id %>')">x</button></td><%}%></tr><% }); %>
+</tbody></table></div>
+<% if(isAdmin){%><div style="padding:12px"><div class="form-row"><div class="form-group"><label>Contractor</label><select id="rt-ct"><% contractors.forEach(function(c){%><option value="<%= c.id %>"><%= c.name %></option><%});%></select></div><div class="form-group"><label>Position</label><input id="rt-pos"></div><div class="form-group"><label>Daily Rate</label><input type="number" id="rt-dr" step="0.01" value="0"></div><div class="form-group"><label>Hourly Rate</label><input type="number" id="rt-hr" step="0.01" value="0"></div><div class="form-group"><label>Currency</label><input id="rt-cur" value="THB"></div><div class="form-group"><label>Effective</label><input type="date" id="rt-date"></div></div><button class="btn btn-teal btn-sm" onclick="postForm('/setup/rate/save',{contractor_id:v('rt-ct'),position:v('rt-pos'),daily_rate:v('rt-dr'),hourly_rate:v('rt-hr'),currency:v('rt-cur'),effective_date:v('rt-date')})">+ Add</button></div><%}%>
+</div></div>
+
+<div id="tab-stdmanhour" class="tab-content"><div class="card"><div class="card-header"><h3>Standard Manhour</h3></div>
+<div class="table-wrapper"><table><thead><tr><th>ID</th><th>Work Type</th><th>Work Item</th><th>Difficulty</th><th>MH/Unit</th><th>Unit</th><th>Valid</th><% if(isAdmin){%><th></th><%}%></tr></thead><tbody>
+<% stdManhour.forEach(function(s) { %><tr><td class="mono"><%= s.id %></td><td><%= s.work_type %></td><td><%= s.work_item %></td><td><span class="badge badge-info"><%= s.difficulty_level %></span></td><td class="mono"><%= s.std_manhour_per_unit %></td><td><%= s.unit %></td><td><%= s.is_validated?'Yes':'No' %></td>
+<% if(isAdmin){%><td><button class="btn btn-outline btn-sm" style="color:red" onclick="postDel('/setup/stdmanhour/delete/<%= s.id %>')">x</button></td><%}%></tr><% }); %>
+</tbody></table></div>
+<% if(isAdmin){%><div style="padding:12px"><div class="form-row"><div class="form-group"><label>Work Type</label><input id="sm-wt"></div><div class="form-group"><label>Work Item</label><input id="sm-wi"></div><div class="form-group"><label>Difficulty</label><select id="sm-diff"><option>Easy</option><option selected>Normal</option><option>Difficult</option></select></div><div class="form-group"><label>MH/Unit</label><input type="number" id="sm-mh" step="0.1" value="1"></div><div class="form-group"><label>Unit</label><input id="sm-unit" value="EA"></div></div><button class="btn btn-teal btn-sm" onclick="postForm('/setup/stdmanhour/save',{work_type:v('sm-wt'),work_item:v('sm-wi'),difficulty_level:v('sm-diff'),std_manhour_per_unit:v('sm-mh'),unit:v('sm-unit')})">+ Add</button></div><%}%>
+</div></div>
+
+<div id="tab-users" class="tab-content"><div class="card"><div class="card-header"><h3>Users</h3></div>
+<div class="table-wrapper"><table><thead><tr><th>ID</th><th>Username</th><th>Name</th><th>Role</th><th>Email</th><th>Status</th></tr></thead><tbody>
+<% users.forEach(function(u) { %><tr><td class="mono"><%= u.id %></td><td class="mono"><%= u.username %></td><td><%= u.full_name %></td><td><span class="badge badge-info"><%= u.role.replace(/_/g,' ') %></span></td><td><%= u.email %></td><td><span class="badge <%= u.is_active?'badge-success':'badge-danger' %>"><%= u.is_active?'Active':'Off' %></span></td></tr><% }); %>
+</tbody></table></div>
+<% if(isAdmin){%><div style="padding:12px"><div class="form-row"><div class="form-group"><label>Username *</label><input id="us-un"></div><div class="form-group"><label>Password</label><input type="password" id="us-pw" placeholder="password123"></div><div class="form-group"><label>Full Name</label><input id="us-fn"></div><div class="form-group"><label>Role</label><select id="us-role"><option value="it_admin">IT Admin</option><option value="project_engineer">Project Engineer</option><option value="construction_supervisor">Const. Supervisor</option><option value="assistant_supervisor">Asst. Supervisor</option><option value="contractor_user">Contractor</option><option value="management_viewer">Viewer</option><option value="procurement_skl">Procurement</option></select></div><div class="form-group"><label>Email</label><input id="us-em"></div></div><button class="btn btn-teal btn-sm" onclick="postForm('/setup/user/save',{username:v('us-un'),password:v('us-pw'),full_name:v('us-fn'),role:v('us-role'),email:v('us-em')})">+ Add</button></div><%}%>
+</div></div>
+
+<!-- Simple tables -->
+<div id="tab-jobtypes" class="tab-content"><div class="card"><div class="card-header"><h3>Job Types</h3></div>
+<div class="table-wrapper"><table><thead><tr><th>ID</th><th>Name</th><% if(isAdmin){%><th></th><%}%></tr></thead><tbody>
+<% jobTypes.forEach(function(j) { %><tr><td class="mono"><%= j.id %></td><td><%= j.name %></td><% if(isAdmin){%><td><button class="btn btn-outline btn-sm" style="color:red" onclick="postDel('/setup/job-types/delete/<%= j.id %>')">x</button></td><%}%></tr><% }); %>
+</tbody></table></div>
+<% if(isAdmin){%><div style="padding:12px;display:flex;gap:8px"><input id="jt-name" placeholder="Name" style="flex:1"><button class="btn btn-teal btn-sm" onclick="postForm('/setup/job-types/add',{name:v('jt-name')})">+ Add</button></div><%}%>
+</div></div>
+
+<div id="tab-subtypes1" class="tab-content"><div class="card"><div class="card-header"><h3>Sub Types 1</h3></div>
+<div class="table-wrapper"><table><thead><tr><th>ID</th><th>Job Type</th><th>Name</th><% if(isAdmin){%><th></th><%}%></tr></thead><tbody>
+<% subTypes1.forEach(function(s) { %><tr><td class="mono"><%= s.id %></td><td><%= s.jt_name %></td><td><%= s.name %></td><% if(isAdmin){%><td><button class="btn btn-outline btn-sm" style="color:red" onclick="postDel('/setup/sub-types-1/delete/<%= s.id %>')">x</button></td><%}%></tr><% }); %>
+</tbody></table></div>
+<% if(isAdmin){%><div style="padding:12px;display:flex;gap:8px"><select id="st1-jt"><% jobTypes.forEach(function(j){%><option value="<%= j.id %>"><%= j.name %></option><%});%></select><input id="st1-name" placeholder="Name" style="flex:1"><button class="btn btn-teal btn-sm" onclick="postForm('/setup/sub-types-1/add',{job_type_id:v('st1-jt'),name:v('st1-name')})">+ Add</button></div><%}%>
+</div></div>
+
+<div id="tab-subtypes2" class="tab-content"><div class="card"><div class="card-header"><h3>Sub Types 2</h3></div>
+<div class="table-wrapper"><table><thead><tr><th>ID</th><th>Sub Type 1</th><th>Name</th><% if(isAdmin){%><th></th><%}%></tr></thead><tbody>
+<% subTypes2.forEach(function(s) { %><tr><td class="mono"><%= s.id %></td><td><%= s.st1_name %></td><td><%= s.name %></td><% if(isAdmin){%><td><button class="btn btn-outline btn-sm" style="color:red" onclick="postDel('/setup/sub-types-2/delete/<%= s.id %>')">x</button></td><%}%></tr><% }); %>
+</tbody></table></div>
+<% if(isAdmin){%><div style="padding:12px;display:flex;gap:8px"><select id="st2-st1"><% subTypes1.forEach(function(s){%><option value="<%= s.id %>"><%= s.name %></option><%});%></select><input id="st2-name" placeholder="Name" style="flex:1"><button class="btn btn-teal btn-sm" onclick="postForm('/setup/sub-types-2/add',{sub_type_1_id:v('st2-st1'),name:v('st2-name')})">+ Add</button></div><%}%>
+</div></div>
+
+<div id="tab-companies" class="tab-content"><div class="card"><div class="card-header"><h3>Companies</h3></div>
+<div class="table-wrapper"><table><thead><tr><th>ID</th><th>Name</th><% if(isAdmin){%><th></th><%}%></tr></thead><tbody>
+<% companies.forEach(function(c) { %><tr><td class="mono"><%= c.id %></td><td><%= c.name %></td><% if(isAdmin){%><td><button class="btn btn-outline btn-sm" style="color:red" onclick="postDel('/setup/companies/delete/<%= c.id %>')">x</button></td><%}%></tr><% }); %>
+</tbody></table></div>
+<% if(isAdmin){%><div style="padding:12px;display:flex;gap:8px"><input id="co-name" placeholder="Name" style="flex:1"><button class="btn btn-teal btn-sm" onclick="postForm('/setup/companies/add',{name:v('co-name')})">+ Add</button></div><%}%>
+</div></div>
+
+<div id="tab-positions" class="tab-content"><div class="card"><div class="card-header"><h3>Positions</h3></div>
+<div class="table-wrapper"><table><thead><tr><th>ID</th><th>Name</th><% if(isAdmin){%><th></th><%}%></tr></thead><tbody>
+<% positions.forEach(function(p) { %><tr><td class="mono"><%= p.id %></td><td><%= p.name %></td><% if(isAdmin){%><td><button class="btn btn-outline btn-sm" style="color:red" onclick="postDel('/setup/positions/delete/<%= p.id %>')">x</button></td><%}%></tr><% }); %>
+</tbody></table></div>
+<% if(isAdmin){%><div style="padding:12px;display:flex;gap:8px"><input id="po-name" placeholder="Name" style="flex:1"><button class="btn btn-teal btn-sm" onclick="postForm('/setup/positions/add',{name:v('po-name')})">+ Add</button></div><%}%>
+</div></div>
+
+<div id="tab-qps" class="tab-content"><div class="card"><div class="card-header"><h3>Quarter Platforms</h3></div>
+<div class="table-wrapper"><table><thead><tr><th>ID</th><th>Name</th><% if(isAdmin){%><th></th><%}%></tr></thead><tbody>
+<% qps.forEach(function(q) { %><tr><td class="mono"><%= q.id %></td><td><%= q.name %></td><% if(isAdmin){%><td><button class="btn btn-outline btn-sm" style="color:red" onclick="postDel('/setup/quarter-platforms/delete/<%= q.id %>')">x</button></td><%}%></tr><% }); %>
+</tbody></table></div>
+<% if(isAdmin){%><div style="padding:12px;display:flex;gap:8px"><input id="qp-name" placeholder="Name" style="flex:1"><button class="btn btn-teal btn-sm" onclick="postForm('/setup/quarter-platforms/add',{name:v('qp-name')})">+ Add</button></div><%}%>
+</div></div>
+
+<div id="tab-defaultitems" class="tab-content"><div class="card"><div class="card-header"><h3>Default Items</h3></div>
+<div class="table-wrapper"><table><thead><tr><th>ID</th><th>Item</th><th>Unit</th><th>MH/Unit</th><% if(isAdmin){%><th></th><%}%></tr></thead><tbody>
+<% defaultItems.forEach(function(d) { %><tr><td class="mono"><%= d.id %></td><td><%= d.item_name %></td><td><%= d.unit %></td><td class="mono"><%= d.manhour_per_unit %></td><% if(isAdmin){%><td><button class="btn btn-outline btn-sm" style="color:red" onclick="postDel('/setup/default-items/delete/<%= d.id %>')">x</button></td><%}%></tr><% }); %>
+</tbody></table></div>
+<% if(isAdmin){%><div style="padding:12px;display:flex;gap:8px"><input id="di-name" placeholder="Item Name" style="flex:2"><input id="di-unit" value="EA" style="width:60px"><input type="number" id="di-mh" step="0.1" value="1" style="width:80px"><button class="btn btn-teal btn-sm" onclick="postForm('/setup/default-items/add',{item_name:v('di-name'),unit:v('di-unit'),manhour_per_unit:v('di-mh')})">+ Add</button></div><%}%>
+</div></div>
+
+<div id="tab-scopeitems" class="tab-content"><div class="card"><div class="card-header"><h3>Scope Default Items</h3></div>
+<div class="table-wrapper"><table><thead><tr><th>ID</th><th>Scope</th><th>Work Item</th><th>Unit</th><th>Difficulty</th><th>MH/Unit</th><% if(isAdmin){%><th></th><%}%></tr></thead><tbody>
+<% scopeDefaults.forEach(function(s) { %><tr><td class="mono"><%= s.id %></td><td class="mono"><%= s.scope_ref %></td><td><%= s.work_item %></td><td><%= s.unit %></td><td><%= s.difficulty %></td><td class="mono"><%= s.std_mh_per_unit %></td><% if(isAdmin){%><td><button class="btn btn-outline btn-sm" style="color:red" onclick="postDel('/setup/scope-items/delete/<%= s.id %>')">x</button></td><%}%></tr><% }); %>
+</tbody></table></div>
+<% if(isAdmin){%><div style="padding:12px"><div class="form-row"><div class="form-group"><label>Scope *</label><input id="si-ref" placeholder="e.g. 3.1"></div><div class="form-group"><label>Work Item *</label><input id="si-item"></div><div class="form-group"><label>Unit</label><input id="si-unit" value="EA"></div><div class="form-group"><label>Difficulty</label><select id="si-diff"><option>Low</option><option selected>Normal</option><option>Difficult</option><option>N/A</option></select></div><div class="form-group"><label>MH/Unit</label><input type="number" id="si-mh" step="0.1" value="1"></div></div><button class="btn btn-teal btn-sm" onclick="postForm('/setup/scope-items/add',{scope_ref:v('si-ref'),work_item:v('si-item'),unit:v('si-unit'),difficulty:v('si-diff'),std_mh_per_unit:v('si-mh')})">+ Add</button></div><%}%>
+</div></div>
+
+<script>
+function v(id) { return document.getElementById(id).value; }
+function postForm(url, data) {
+  var form = document.createElement('form');
+  form.method = 'POST';
+  form.action = url;
+  for (var key in data) {
+    var inp = document.createElement('input');
+    inp.type = 'hidden';
+    inp.name = key;
+    inp.value = data[key];
+    form.appendChild(inp);
+  }
+  document.body.appendChild(form);
+  form.submit();
+}
+function postDel(url) {
+  if (!confirm('Delete?')) return;
+  var form = document.createElement('form');
+  form.method = 'POST';
+  form.action = url;
+  document.body.appendChild(form);
+  form.submit();
+}
+(function() {
+  var hash = window.location.hash.replace('#tab-','');
+  if (hash) {
+    document.querySelectorAll('.tab-content').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+    var el = document.getElementById('tab-' + hash);
+    if (el) el.classList.add('active');
+  }
+})();
+</script>
+
+<%- include('partials/footer') %>
