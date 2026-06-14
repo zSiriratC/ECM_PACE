@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <title>PACE — {% block title %}Home{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <div class="app-layout">
+
+    <!-- ══ Sidebar ══ -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="logo">P</div>
+        <h1>Pace</h1>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-label">Main</div>
+          <a href="/" class="{% if active_page == 'home' %}active{% endif %}">
+            <span class="nav-icon">🏠</span> Home
+          </a>
+          <a href="/planning" class="{% if active_page == 'planning' %}active{% endif %}">
+            <span class="nav-icon">📋</span> Planning
+          </a>
+          <a href="/daily-report" class="{% if active_page == 'daily-report' %}active{% endif %}">
+            <span class="nav-icon">📝</span> Daily Report
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-label">Dashboard &amp; Report</div>
+          <a href="/dashboard-1" class="{% if active_page == 'dashboard-1' %}active{% endif %}">
+            <span class="nav-icon">📊</span> Project-wise Efficiency
+          </a>
+          <a href="/dashboard-2" class="{% if active_page == 'dashboard-2' %}active{% endif %}">
+            <span class="nav-icon">📈</span> PDI vs PGI
+          </a>
+          <a href="/timesheet" class="{% if active_page == 'timesheet' %}active{% endif %}">
+            <span class="nav-icon">⏱️</span> Timesheet Report
+          </a>
+          <a href="/manhour" class="{% if active_page == 'manhour' %}active{% endif %}">
+            <span class="nav-icon">🎎</span> Manhour Summary Report
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-label">Setting</div>
+          <a href="/master-data" class="{% if active_page == 'master-data' %}active{% endif %}">
+            <span class="nav-icon">⚙️</span> Master Data
+          </a>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        PACE v1.0 &copy; 2026
+      </div>
+    </aside>
+
+    <!-- ══ Main Area ══ -->
+    <div class="main-wrapper">
+      <header class="main-header">
+        <div class="page-title">{% block page_title %}Home{% endblock %}</div>
+        <div class="header-actions">
+          {% block header_actions %}{% endblock %}
+
+          <!-- ── User Menu ── -->
+          <div class="role-selector" id="roleSelector">
+            <button class="role-selector-btn" id="roleSelectorBtn" type="button">
+              <span>👤</span>
+              <span id="roleLabel">{{ user.name if user else 'Guest' }}</span>
+              <span class="role-badge" id="roleBadge">{{ (user.role if user else 'guest')|upper }}</span>
+              <span style="font-size:10px; color:var(--color-text-dim);">▼</span>
+            </button>
+            <div class="role-dropdown" id="roleDropdown">
+              {% if user %}
+              <div style="padding: 12px 14px; border-bottom: 1px solid var(--color-border);">
+                <div style="font-weight: 600; font-size: 13px; color: var(--color-text);">{{ user.name }}</div>
+                <div style="font-size: 11px; color: var(--color-text-dim); margin-top: 2px;">{{ user.email }}</div>
+                <div style="font-size: 11px; color: var(--color-text-muted); margin-top: 2px;">{{ user.job_title }}</div>
+              </div>
+              {% endif %}
+
+              <div style="padding: 6px 14px; font-size: 10px; color: var(--color-text-dim); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;">Current Role</div>
+              <div style="padding: 6px 14px 12px; border-bottom: 1px solid var(--color-border);">
+                <span class="role-badge" style="font-size: 11px; padding: 3px 10px;">{{ (user.role if user else 'guest')|upper }}</span>
+              </div>
+
+              <a href="/login" class="role-dropdown-item">
+                <span class="check">🔄</span> Switch Account
+              </a>
+              <a href="/auth/logout" class="role-dropdown-item" style="color: var(--color-danger);">
+                <span class="check">🚪</span> Sign Out
+              </a>
+            </div>
+          </div>
+
+          <!-- ── Theme Toggle ── -->
+          <button class="theme-toggle" id="themeToggle" type="button" title="Toggle light/dark mode">🌙</button>
+        </div>
+      </header>
+
+      <main class="main-content">
+        <div id="react-root">{% block content %}{% endblock %}</div>
+      </main>
+    </div>
+
+  </div>
+
+  <!-- ══ Global Scripts ══ -->
+  <script>
+    (function() {
+      var html = document.documentElement;
+      var btn = document.getElementById('themeToggle');
+      var saved = localStorage.getItem('pace-theme') || 'dark';
+      html.setAttribute('data-theme', saved);
+      btn.textContent = saved === 'dark' ? '🌙' : '☀️';
+      btn.addEventListener('click', function() {
+        var current = html.getAttribute('data-theme');
+        var next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('pace-theme', next);
+        btn.textContent = next === 'dark' ? '🌙' : '☀️';
+        window.dispatchEvent(new CustomEvent('pace-theme-change', { detail: next }));
+      });
+    })();
+
+    (function() {
+      var btn = document.getElementById('roleSelectorBtn');
+      var dropdown = document.getElementById('roleDropdown');
+      var userRole = '{{ user.role if user else "officer" }}';
+      var userName = '{{ user.name if user else "Guest" }}';
+      localStorage.setItem('pace-role', userRole);
+      localStorage.setItem('pace-user-name', userName);
+      window.dispatchEvent(new CustomEvent('pace-role-change', { detail: userRole }));
+
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        dropdown.classList.toggle('open');
+      });
+      document.addEventListener('click', function() {
+        dropdown.classList.remove('open');
+      });
+    })();
+  </script>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

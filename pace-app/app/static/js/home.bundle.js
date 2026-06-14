@@ -1,0 +1,217 @@
+/*
+ * ATTENTION: The "eval" devtool has been used (maybe by default in mode: "development").
+ * This devtool is neither made for production nor for readable output files.
+ * It uses "eval()" calls to create a separate source file in the browser devtools.
+ * If you are trying to read the output file, select a different devtool (https://webpack.js.org/configuration/devtool/)
+ * or disable the default devtool with "devtool: false".
+ * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
+ */
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./islands/home/index.tsx"
+/*!********************************!*\
+  !*** ./islands/home/index.tsx ***!
+  \********************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+eval("{__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react/jsx-runtime */ \"./node_modules/react/jsx-runtime.js\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ \"./node_modules/react/index.js\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var react_dom_client__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-dom/client */ \"./node_modules/react-dom/client.js\");\n\n\n\nconst STATUS_STEPS = [\n    { key: \"Drafting Plan\", label: \"Draft\", page: \"planning\" },\n    { key: \"Pending Approval\", label: \"Pending\", page: \"planning\" },\n    { key: \"Approved Plan\", label: \"Approved\", page: \"planning\" },\n    { key: \"In Progress\", label: \"In Progress\", page: \"daily-report\" },\n    { key: \"Completed\", label: \"Completed\", page: \"closeout\" },\n];\n// Sort priority: higher = shown first\nconst STATUS_SORT_ORDER = {\n    \"In Progress\": 5,\n    \"Approved Plan\": 4,\n    \"Pending Approval\": 3,\n    \"Drafting Plan\": 2,\n    \"Completed\": 1,\n};\nconst STATUS_BADGE_COLORS = {\n    \"Drafting Plan\": { bg: \"rgba(108,142,255,0.08)\", text: \"var(--color-primary)\", border: \"rgba(108,142,255,0.2)\" },\n    \"Pending Approval\": { bg: \"rgba(255,184,77,0.08)\", text: \"var(--color-warning)\", border: \"rgba(255,184,77,0.2)\" },\n    \"Approved Plan\": { bg: \"rgba(80,227,194,0.08)\", text: \"var(--color-accent)\", border: \"rgba(80,227,194,0.2)\" },\n    \"In Progress\": { bg: \"rgba(255,184,77,0.08)\", text: \"var(--color-warning)\", border: \"rgba(255,184,77,0.2)\" },\n    \"Completed\": { bg: \"rgba(74,222,128,0.08)\", text: \"var(--color-success)\", border: \"rgba(74,222,128,0.2)\" },\n};\nconst SUMMARY_COLORS = [\n    { bg: \"rgba(108,142,255,0.06)\", border: \"rgba(108,142,255,0.15)\", text: \"var(--color-primary)\" },\n    { bg: \"rgba(255,184,77,0.06)\", border: \"rgba(255,184,77,0.15)\", text: \"var(--color-warning)\" },\n    { bg: \"rgba(80,227,194,0.06)\", border: \"rgba(80,227,194,0.15)\", text: \"var(--color-accent)\" },\n    { bg: \"rgba(255,184,77,0.06)\", border: \"rgba(255,184,77,0.15)\", text: \"var(--color-warning)\" },\n    { bg: \"rgba(74,222,128,0.06)\", border: \"rgba(74,222,128,0.15)\", text: \"var(--color-success)\" },\n];\nconst STEP_DONE = { bg: \"rgba(74,222,128,0.15)\", color: \"var(--color-success)\", border: \"rgba(74,222,128,0.4)\" };\nconst STEP_ACTIVE = { bg: \"rgba(255,184,77,0.15)\", color: \"var(--color-warning)\", border: \"rgba(255,184,77,0.4)\" };\nconst STEP_FUTURE = { bg: \"var(--color-surface-2)\", color: \"var(--color-text-dim)\", border: \"var(--color-border)\" };\nconst LINE_DONE = \"rgba(74,222,128,0.35)\";\nconst LINE_ACTIVE = \"rgba(255,184,77,0.35)\";\nconst LINE_FUTURE = \"var(--color-border)\";\nconst PAGE_SIZE_OPTIONS = [10, 25, 50, 100];\nconst apiH = () => ({ \"Content-Type\": \"application/json\", \"X-User-Role\": localStorage.getItem(\"pace-role\") || \"administrator\" });\nconst api = async (url) => { const r = await fetch(url, { headers: apiH() }); return r.json(); };\nfunction todayStr() { return new Date().toISOString().split(\"T\")[0]; }\nfunction fmtDate(val) {\n    if (!val)\n        return \"\";\n    try {\n        const d = new Date(val);\n        const M = [\"Jan\", \"Feb\", \"Mar\", \"Apr\", \"May\", \"Jun\", \"Jul\", \"Aug\", \"Sep\", \"Oct\", \"Nov\", \"Dec\"];\n        return String(d.getDate()).padStart(2, \"0\") + \" \" + M[d.getMonth()] + \" \" + d.getFullYear();\n    }\n    catch {\n        return val;\n    }\n}\n/* ══════════════════════════════════════ COMPONENT ══════════════════════════════════════ */\nconst HomePage = () => {\n    const [jobs, setJobs] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)([]);\n    const [summaries, setSummaries] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)({});\n    const [progressMap, setProgressMap] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)({});\n    const [reportedToday, setReportedToday] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(new Set());\n    const [loading, setLoading] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(true);\n    // Lookups\n    const [wpMappings, setWpMappings] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)([]);\n    const [companies, setCompanies] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)([]);\n    const [jobTypes, setJobTypes] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)([]);\n    // Filters\n    const [search, setSearch] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(\"\");\n    const [statusFilter, setStatusFilter] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(\"\");\n    const [fType, setFType] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(\"\");\n    const [fAsset, setFAsset] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(\"\");\n    const [fPlatform, setFPlatform] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(\"\");\n    const [fCompany, setFCompany] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(\"\");\n    const [fJobType, setFJobType] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(\"\");\n    const [fSub1, setFSub1] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(\"\");\n    const [fSub2, setFSub2] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(\"\");\n    // Pagination\n    const [currentPage, setCurrentPage] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(1);\n    const [pageSize, setPageSize] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(10);\n    // ── Load all data in parallel ──\n    (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {\n        const loadAll = async () => {\n            try {\n                // Parallel fetch: lookups + jobs\n                const [wpRes, compRes, jtRes, jobsRes] = await Promise.all([\n                    api(\"/api/master-data/working-platform-mappings\"),\n                    api(\"/api/master-data/companies\"),\n                    api(\"/api/master-data/job-types\"),\n                    api(\"/api/planning/jobs\"),\n                ]);\n                setWpMappings(wpRes);\n                setCompanies(compRes);\n                setJobTypes(jtRes);\n                setJobs(jobsRes);\n                // Parallel fetch: summaries + progress for all jobs\n                const td = todayStr();\n                const summaryPromises = jobsRes.map((j) => api(\"/api/planning/plan-summary?job_no=\" + j.job_no).catch(() => null));\n                const progressPromises = jobsRes.map((j) => api(\"/api/daily-report/project/progress?project_no=\" + j.job_no).catch(() => []));\n                const [summaryResults, progressResults] = await Promise.all([\n                    Promise.all(summaryPromises),\n                    Promise.all(progressPromises),\n                ]);\n                const sums = {};\n                const progs = {};\n                const todaySet = new Set();\n                jobsRes.forEach((j, idx) => {\n                    const s = summaryResults[idx];\n                    if (s && s.id)\n                        sums[j.job_no] = s;\n                    const reports = progressResults[idx];\n                    if (reports && reports.length > 0) {\n                        const sorted = reports.sort((a, b) => b.progress_date.localeCompare(a.progress_date));\n                        progs[j.job_no] = sorted[0].progress_total || 0;\n                        if (reports.some((r) => r.progress_date === td))\n                            todaySet.add(j.job_no);\n                    }\n                });\n                setSummaries(sums);\n                setProgressMap(progs);\n                setReportedToday(todaySet);\n            }\n            catch { }\n            setLoading(false);\n        };\n        loadAll();\n    }, []);\n    const activeStepIdx = (0,react__WEBPACK_IMPORTED_MODULE_1__.useCallback)((status) => STATUS_STEPS.findIndex(s => s.key === status), []);\n    const navigate = (0,react__WEBPACK_IMPORTED_MODULE_1__.useCallback)((job) => {\n        const step = STATUS_STEPS.find(s => s.key === job.status);\n        if (step)\n            window.location.href = \"/\" + step.page + \"?job=\" + encodeURIComponent(job.job_no);\n    }, []);\n    // Dropdown options (memoized)\n    const activeWp = (0,react__WEBPACK_IMPORTED_MODULE_1__.useMemo)(() => wpMappings.filter(m => m.status === \"Active\"), [wpMappings]);\n    const uniqueAssets = (0,react__WEBPACK_IMPORTED_MODULE_1__.useMemo)(() => [...new Set(activeWp.map(m => m.asset))].sort(), [activeWp]);\n    const uniquePlatforms = (0,react__WEBPACK_IMPORTED_MODULE_1__.useMemo)(() => [...new Set(activeWp.filter(m => !fAsset || m.asset === fAsset).map(m => m.working_platform))].sort(), [activeWp, fAsset]);\n    const activeCompanies = (0,react__WEBPACK_IMPORTED_MODULE_1__.useMemo)(() => companies.filter(c => c.status === \"Active\").map(c => c.name).sort(), [companies]);\n    const activeJt = (0,react__WEBPACK_IMPORTED_MODULE_1__.useMemo)(() => jobTypes.filter(j => j.status === \"Active\"), [jobTypes]);\n    const uniqueL1 = (0,react__WEBPACK_IMPORTED_MODULE_1__.useMemo)(() => [...new Set(activeJt.map(j => j.description_l1).filter(Boolean))].sort(), [activeJt]);\n    const uniqueL2 = (0,react__WEBPACK_IMPORTED_MODULE_1__.useMemo)(() => [...new Set(activeJt.filter(j => !fJobType || j.description_l1 === fJobType).map(j => j.description_l2).filter(Boolean))].sort(), [activeJt, fJobType]);\n    const uniqueL3 = (0,react__WEBPACK_IMPORTED_MODULE_1__.useMemo)(() => [...new Set(activeJt.filter(j => (!fJobType || j.description_l1 === fJobType) && (!fSub1 || j.description_l2 === fSub1)).map(j => j.description_l3).filter(Boolean))].sort(), [activeJt, fJobType, fSub1]);\n    // Filter + Sort\n    const filtered = (0,react__WEBPACK_IMPORTED_MODULE_1__.useMemo)(() => {\n        const result = jobs.filter(j => {\n            if (j.status === \"Completed\" && statusFilter !== \"Completed\")\n                return false;\n            if (statusFilter && j.status !== statusFilter)\n                return false;\n            if (fType && (j.group || \"project\") !== fType)\n                return false;\n            if (fAsset && j.location !== fAsset)\n                return false;\n            if (fPlatform && j.working_platform !== fPlatform)\n                return false;\n            if (fCompany && j.asset !== fCompany)\n                return false;\n            if (fJobType && j.job_type !== fJobType)\n                return false;\n            if (fSub1 && j.sub_type !== fSub1)\n                return false;\n            if (fSub2 && j.discipline !== fSub2)\n                return false;\n            if (search) {\n                const q = search.toLowerCase();\n                return (j.job_no || \"\").toLowerCase().includes(q) ||\n                    (j.job_name || \"\").toLowerCase().includes(q) ||\n                    (j.location || \"\").toLowerCase().includes(q) ||\n                    (j.working_platform || \"\").toLowerCase().includes(q) ||\n                    (j.asset || \"\").toLowerCase().includes(q) ||\n                    (j.job_type || \"\").toLowerCase().includes(q) ||\n                    (j.sub_type || \"\").toLowerCase().includes(q) ||\n                    (j.project_engineer || \"\").toLowerCase().includes(q);\n            }\n            return true;\n        });\n        // Sort: status priority desc, then unreported first within In Progress, then completed last\n        result.sort((a, b) => {\n            const aPri = STATUS_SORT_ORDER[a.status] || 0;\n            const bPri = STATUS_SORT_ORDER[b.status] || 0;\n            if (aPri !== bPri)\n                return bPri - aPri;\n            // Within In Progress: unreported today first\n            if (a.status === \"In Progress\" && b.status === \"In Progress\") {\n                const aReported = reportedToday.has(a.job_no) ? 1 : 0;\n                const bReported = reportedToday.has(b.job_no) ? 1 : 0;\n                if (aReported !== bReported)\n                    return aReported - bReported;\n            }\n            return a.job_no.localeCompare(b.job_no);\n        });\n        return result;\n    }, [jobs, search, statusFilter, fType, fAsset, fPlatform, fCompany, fJobType, fSub1, fSub2, reportedToday]);\n    // Pagination\n    const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));\n    const safePage = Math.min(currentPage, totalPages);\n    const paginated = (0,react__WEBPACK_IMPORTED_MODULE_1__.useMemo)(() => filtered.slice((safePage - 1) * pageSize, safePage * pageSize), [filtered, safePage, pageSize]);\n    (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => { setCurrentPage(1); }, [search, statusFilter, fType, fAsset, fPlatform, fCompany, fJobType, fSub1, fSub2, pageSize]);\n    const statusCounts = (0,react__WEBPACK_IMPORTED_MODULE_1__.useMemo)(() => STATUS_STEPS.map((s, i) => ({\n        ...s, count: jobs.filter(j => j.status === s.key).length, color: SUMMARY_COLORS[i],\n    })), [jobs]);\n    const hasFilters = fType || fAsset || fPlatform || fCompany || fJobType || fSub1 || fSub2;\n    const clearFilters = () => { setFType(\"\"); setFAsset(\"\"); setFPlatform(\"\"); setFCompany(\"\"); setFJobType(\"\"); setFSub1(\"\"); setFSub2(\"\"); setSearch(\"\"); setStatusFilter(\"\"); };\n    if (loading)\n        return (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"div\", { className: \"empty-state\", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"p\", { style: { color: \"var(--color-text-dim)\" }, children: \"Loading...\" }) });\n    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"div\", { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"div\", { style: { display: \"grid\", gridTemplateColumns: \"repeat(5, 1fr)\", gap: 10, marginBottom: 16 }, children: statusCounts.map(s => {\n                    const isActive = statusFilter === s.key;\n                    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"div\", { onClick: () => setStatusFilter(isActive ? \"\" : s.key), style: {\n                            background: isActive ? s.color.bg : \"var(--color-surface)\",\n                            border: \"1px solid \" + (isActive ? s.color.border : \"var(--color-border)\"),\n                            borderRadius: \"var(--radius-md)\", padding: \"16px 12px\", textAlign: \"center\",\n                            cursor: \"pointer\", transition: \"all 0.15s\",\n                        }, onMouseEnter: e => { if (!isActive) {\n                            e.currentTarget.style.background = s.color.bg;\n                            e.currentTarget.style.borderColor = s.color.border;\n                        } }, onMouseLeave: e => { if (!isActive) {\n                            e.currentTarget.style.background = \"var(--color-surface)\";\n                            e.currentTarget.style.borderColor = \"var(--color-border)\";\n                        } }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"div\", { style: { fontSize: 24, fontWeight: 700, fontFamily: \"var(--font-mono)\", color: s.count > 0 ? s.color.text : \"var(--color-text-dim)\" }, children: s.count }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"div\", { style: { fontSize: 10, fontWeight: 600, textTransform: \"uppercase\", letterSpacing: 1, color: s.count > 0 ? s.color.text : \"var(--color-text-dim)\", marginTop: 2 }, children: s.label })] }, s.key));\n                }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"div\", { className: \"card\", style: { padding: \"12px 16px\", marginBottom: 16 }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"div\", { style: { display: \"flex\", gap: 8, flexWrap: \"wrap\", alignItems: \"flex-end\" }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"div\", { style: { flex: 2, minWidth: 200 }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"input\", { className: \"form-control\", placeholder: \"Search all columns...\", value: search, onChange: e => setSearch(e.target.value) }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"div\", { style: { minWidth: 110 }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"select\", { className: \"form-control\", value: fType, onChange: e => setFType(e.target.value), children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"option\", { value: \"\", children: \"All Types\" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"option\", { value: \"project\", children: \"Project\" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"option\", { value: \"notification\", children: \"Notification\" })] }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"div\", { style: { minWidth: 110 }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"select\", { className: \"form-control\", value: fAsset, onChange: e => { setFAsset(e.target.value); setFPlatform(\"\"); }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"option\", { value: \"\", children: \"All Assets\" }), uniqueAssets.map(a => (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"option\", { value: a, children: a }, a))] }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"div\", { style: { minWidth: 110 }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"select\", { className: \"form-control\", value: fPlatform, onChange: e => setFPlatform(e.target.value), children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"option\", { value: \"\", children: \"All Platforms\" }), uniquePlatforms.map(p => (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"option\", { value: p, children: p }, p))] }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"div\", { style: { minWidth: 110 }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"select\", { className: \"form-control\", value: fCompany, onChange: e => setFCompany(e.target.value), children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"option\", { value: \"\", children: \"All Companies\" }), activeCompanies.map(c => (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"option\", { value: c, children: c }, c))] }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"div\", { style: { minWidth: 110 }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"select\", { className: \"form-control\", value: fJobType, onChange: e => { setFJobType(e.target.value); setFSub1(\"\"); setFSub2(\"\"); }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"option\", { value: \"\", children: \"All Job Types\" }), uniqueL1.map(l => (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"option\", { value: l, children: l }, l))] }) }), fJobType && ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"div\", { style: { minWidth: 110 }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"select\", { className: \"form-control\", value: fSub1, onChange: e => { setFSub1(e.target.value); setFSub2(\"\"); }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"option\", { value: \"\", children: \"All Sub 1\" }), uniqueL2.map(l => (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"option\", { value: l, children: l }, l))] }) })), fSub1 && ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"div\", { style: { minWidth: 110 }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"select\", { className: \"form-control\", value: fSub2, onChange: e => setFSub2(e.target.value), children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"option\", { value: \"\", children: \"All Sub 2\" }), uniqueL3.map(l => (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"option\", { value: l, children: l }, l))] }) })), (hasFilters || search || statusFilter) && ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"button\", { className: \"btn btn-secondary btn-sm\", onClick: clearFilters, style: { height: 34 }, children: \"Clear\" }))] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"div\", { style: { fontSize: 11, color: \"var(--color-text-dim)\", marginTop: 8 }, children: [\"Showing \", paginated.length, \" of \", filtered.length, \" projects\", filtered.length !== jobs.length && \" (filtered from \" + jobs.length + \" total)\"] })] }), filtered.length === 0 && ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"div\", { className: \"empty-state\", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"p\", { style: { color: \"var(--color-text-dim)\" }, children: statusFilter === \"\" && !hasFilters && !search ? \"No active projects. Click DONE to view completed.\" : \"No projects match your filter.\" }) })), paginated.map(job => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(ProjectCard, { job: job, summary: summaries[job.job_no], progressPct: progressMap[job.job_no] || 0, isReportedToday: reportedToday.has(job.job_no), stepIdx: activeStepIdx(job.status), onNavigate: navigate }, job.job_no))), filtered.length > 0 && ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"div\", { style: {\n                    display: \"flex\", alignItems: \"center\", justifyContent: \"space-between\",\n                    marginTop: 16, padding: \"12px 0\", borderTop: \"1px solid var(--color-border)\",\n                    flexWrap: \"wrap\", gap: 12,\n                }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"div\", { style: { display: \"flex\", alignItems: \"center\", gap: 8, fontSize: 12, color: \"var(--color-text-muted)\" }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"span\", { children: \"Show\" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"select\", { className: \"form-control\", value: pageSize, onChange: e => setPageSize(parseInt(e.target.value)), style: { width: 70, padding: \"4px 8px\", fontSize: 12 }, children: PAGE_SIZE_OPTIONS.map(n => (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"option\", { value: n, children: n }, n)) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"span\", { children: \"per page\" })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"div\", { style: { fontSize: 12, color: \"var(--color-text-muted)\" }, children: [\"Page \", safePage, \" of \", totalPages] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"div\", { style: { display: \"flex\", gap: 4 }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"button\", { className: \"btn btn-secondary btn-sm\", disabled: safePage <= 1, onClick: () => setCurrentPage(1), style: { padding: \"4px 8px\", fontSize: 11 }, children: \"\\u00AB\\u00AB\" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"button\", { className: \"btn btn-secondary btn-sm\", disabled: safePage <= 1, onClick: () => setCurrentPage(p => Math.max(1, p - 1)), style: { padding: \"4px 10px\", fontSize: 11 }, children: \"\\u2039 Prev\" }), Array.from({ length: totalPages }, (_, i) => i + 1)\n                                .filter(p => p === 1 || p === totalPages || Math.abs(p - safePage) <= 2)\n                                .map((p, idx, arr) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)((react__WEBPACK_IMPORTED_MODULE_1___default().Fragment), { children: [idx > 0 && arr[idx - 1] !== p - 1 && (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"span\", { style: { padding: \"4px 4px\", fontSize: 11, color: \"var(--color-text-dim)\" }, children: \"\\u2026\" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"button\", { className: \"btn btn-sm \" + (p === safePage ? \"btn-primary\" : \"btn-secondary\"), onClick: () => setCurrentPage(p), style: { padding: \"4px 10px\", fontSize: 11, minWidth: 32 }, children: p })] }, p))), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"button\", { className: \"btn btn-secondary btn-sm\", disabled: safePage >= totalPages, onClick: () => setCurrentPage(p => Math.min(totalPages, p + 1)), style: { padding: \"4px 10px\", fontSize: 11 }, children: \"Next \\u203A\" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"button\", { className: \"btn btn-secondary btn-sm\", disabled: safePage >= totalPages, onClick: () => setCurrentPage(totalPages), style: { padding: \"4px 8px\", fontSize: 11 }, children: \"\\u00BB\\u00BB\" })] })] }))] }));\n};\n/* ══════════════════════════════════════ PROJECT CARD (memoized) ══════════════════════════════════════ */\nconst ProjectCard = react__WEBPACK_IMPORTED_MODULE_1___default().memo(({ job, summary, progressPct, isReportedToday, stepIdx, onNavigate }) => {\n    const planMh = summary?.total_manhour || 0;\n    const actualMh = summary?.actual_manhour_daily || 0;\n    const mhPct = planMh > 0 ? (actualMh / planMh * 100) : 0;\n    const isCompleted = job.status === \"Completed\";\n    const badgeColor = STATUS_BADGE_COLORS[job.status] || STATUS_BADGE_COLORS[\"Drafting Plan\"];\n    const isGreen = job.status === \"In Progress\" && isReportedToday;\n    const cardBorder = isGreen ? \"rgba(74,222,128,0.5)\" : \"var(--color-border)\";\n    const cardBg = isGreen ? \"rgba(74,222,128,0.02)\" : \"var(--color-surface)\";\n    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"div\", { onClick: () => onNavigate(job), style: {\n            background: cardBg, border: \"1px solid \" + cardBorder,\n            borderRadius: \"var(--radius-md)\", padding: \"16px 20px\", marginBottom: 10,\n            cursor: \"pointer\", transition: \"box-shadow 0.15s, border-color 0.15s\",\n            borderLeftWidth: isGreen ? 3 : 1,\n        }, onMouseEnter: e => { e.currentTarget.style.boxShadow = \"var(--shadow-sm)\"; }, onMouseLeave: e => { e.currentTarget.style.boxShadow = \"none\"; }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"div\", { style: { display: \"flex\", justifyContent: \"space-between\", alignItems: \"flex-start\", marginBottom: 14 }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"div\", { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"div\", { style: { display: \"flex\", alignItems: \"center\", gap: 8 }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"span\", { style: { fontWeight: 600, fontSize: 14, color: \"var(--color-text)\" }, children: job.job_name || job.job_no }), isGreen && (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"span\", { style: { fontSize: 9, padding: \"1px 6px\", borderRadius: 10, background: \"rgba(74,222,128,0.12)\", color: \"var(--color-success)\", fontWeight: 600 }, children: \"\\u2713 Reported\" }), job.status === \"In Progress\" && !isReportedToday && ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"span\", { style: { fontSize: 9, padding: \"1px 6px\", borderRadius: 10, background: \"rgba(255,107,107,0.1)\", color: \"var(--color-danger)\", fontWeight: 600 }, children: \"\\u26A0 Pending\" }))] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"div\", { style: { fontSize: 11, color: \"var(--color-text-dim)\", marginTop: 3, fontFamily: \"var(--font-mono)\", letterSpacing: 0.3 }, children: [job.job_no, [job.location, job.working_platform, job.asset].filter(Boolean).length > 0 && (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"span\", { style: { margin: \"0 5px\", color: \"var(--color-border-light)\" }, children: \"\\u00B7\" }), [job.location, job.working_platform, job.asset].filter(Boolean).join(\" · \")] })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"span\", { style: { padding: \"3px 10px\", borderRadius: 20, fontSize: 10, fontWeight: 600, letterSpacing: 0.3, flexShrink: 0, background: badgeColor.bg, color: badgeColor.text, border: \"1px solid \" + badgeColor.border }, children: job.status })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"div\", { style: { display: \"flex\", alignItems: \"center\", marginBottom: 14, padding: \"0 4px\" }, children: STATUS_STEPS.map((step, i) => {\n                    const isPast = i < stepIdx;\n                    const isCurrent = i === stepIdx;\n                    const isFuture = i > stepIdx;\n                    let cs = STEP_FUTURE;\n                    let content = i + 1;\n                    if (isPast || (isCompleted && i <= stepIdx)) {\n                        cs = STEP_DONE;\n                        content = \"✓\";\n                    }\n                    else if (isCurrent && !isCompleted) {\n                        cs = STEP_ACTIVE;\n                        content = \"↻\";\n                    }\n                    let lc = \"var(--color-text-dim)\";\n                    if (isPast || (isCompleted && i <= stepIdx))\n                        lc = \"var(--color-success)\";\n                    else if (isCurrent)\n                        lc = \"var(--color-warning)\";\n                    else\n                        lc = \"var(--color-text-dim)\";\n                    let lineColor = LINE_FUTURE;\n                    if (i > 0) {\n                        if (i <= stepIdx)\n                            lineColor = LINE_DONE;\n                        else if (i === stepIdx + 1 && !isCompleted)\n                            lineColor = LINE_ACTIVE;\n                    }\n                    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)((react__WEBPACK_IMPORTED_MODULE_1___default().Fragment), { children: [i > 0 && (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"div\", { style: { flex: 1, height: 3, borderRadius: 2, background: lineColor, margin: \"0 -3px\", marginTop: -12 } }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"div\", { style: { display: \"flex\", flexDirection: \"column\", alignItems: \"center\", flexShrink: 0 }, onClick: e => { e.stopPropagation(); if (!isFuture)\n                                    window.location.href = \"/\" + step.page + \"?job=\" + encodeURIComponent(job.job_no); }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"div\", { style: { width: 28, height: 28, borderRadius: \"50%\", display: \"flex\", alignItems: \"center\", justifyContent: \"center\", fontSize: isCurrent ? 13 : 10, fontWeight: 700, background: cs.bg, color: cs.color, border: \"2px solid \" + cs.border, cursor: isFuture ? \"default\" : \"pointer\", transition: \"all 0.15s\", position: \"relative\", zIndex: 1 }, children: content }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"div\", { style: { fontSize: 8, marginTop: 3, fontWeight: isCurrent ? 700 : 400, color: lc, textTransform: \"uppercase\", letterSpacing: 0.5 }, children: step.label })] })] }, step.key));\n                }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"div\", { style: { display: \"flex\", gap: 12, marginBottom: 6, flexWrap: \"wrap\" }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"div\", { style: { flex: 1, minWidth: 180 }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"div\", { style: { display: \"flex\", justifyContent: \"space-between\", fontSize: 10, color: \"var(--color-text-dim)\", marginBottom: 3 }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"span\", { children: \"Manhour\" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"span\", { style: { fontFamily: \"var(--font-mono)\" }, children: [actualMh.toFixed(0), \" / \", planMh.toFixed(0), \" MH\", planMh > 0 && (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"span\", { style: { marginLeft: 4, fontWeight: 600, color: mhPct > 100 ? \"var(--color-danger)\" : \"var(--color-primary)\" }, children: [\"(\", mhPct.toFixed(0), \"%)\"] })] })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"div\", { style: { height: 4, borderRadius: 2, background: \"var(--color-surface-2)\", overflow: \"hidden\" }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"div\", { style: { height: \"100%\", borderRadius: 2, width: Math.min(mhPct, 100) + \"%\", background: mhPct > 100 ? \"var(--color-danger)\" : \"var(--color-primary)\", transition: \"width 0.3s\" } }) })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"div\", { style: { flex: 1, minWidth: 180 }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"div\", { style: { display: \"flex\", justifyContent: \"space-between\", fontSize: 10, color: \"var(--color-text-dim)\", marginBottom: 3 }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"span\", { children: \"Progress\" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"span\", { style: { fontFamily: \"var(--font-mono)\", fontWeight: 600, color: progressPct >= 100 ? \"var(--color-success)\" : \"var(--color-accent)\" }, children: [progressPct.toFixed(1), \"%\"] })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"div\", { style: { height: 4, borderRadius: 2, background: \"var(--color-surface-2)\", overflow: \"hidden\" }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"div\", { style: { height: \"100%\", borderRadius: 2, width: Math.min(progressPct, 100) + \"%\", background: progressPct >= 100 ? \"var(--color-success)\" : \"var(--color-accent)\", transition: \"width 0.3s\" } }) })] })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"div\", { style: { display: \"flex\", gap: 16, fontSize: 11, color: \"var(--color-text-dim)\", flexWrap: \"wrap\", marginTop: 6 }, children: [job.plan_start_date && (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"span\", { children: [fmtDate(job.plan_start_date), \" \\u2192 \", fmtDate(job.plan_end_date)] }), job.job_type && (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(\"span\", { style: { color: \"var(--color-text-muted)\" }, children: [job.job_type, job.sub_type ? \" / \" + job.sub_type : \"\"] }), isCompleted && (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(\"span\", { style: { color: \"var(--color-success)\", fontWeight: 600 }, children: \"\\u2713 Completed\" })] })] }));\n});\nconst root = document.getElementById(\"react-root\");\nif (root)\n    (0,react_dom_client__WEBPACK_IMPORTED_MODULE_2__.createRoot)(root).render((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(HomePage, {}));\n\n\n//# sourceURL=webpack://pace-frontend/./islands/home/index.tsx?\n}");
+
+/***/ }
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			id: moduleId,
+/******/ 			loaded: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		if (!(moduleId in __webpack_modules__)) {
+/******/ 			delete __webpack_module_cache__[moduleId];
+/******/ 			var e = new Error("Cannot find module '" + moduleId + "'");
+/******/ 			e.code = 'MODULE_NOT_FOUND';
+/******/ 			throw e;
+/******/ 		}
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = __webpack_modules__;
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/chunk loaded */
+/******/ 	(() => {
+/******/ 		var deferred = [];
+/******/ 		__webpack_require__.O = (result, chunkIds, fn, priority) => {
+/******/ 			if(chunkIds) {
+/******/ 				priority = priority || 0;
+/******/ 				for(var i = deferred.length; i > 0 && deferred[i - 1][2] > priority; i--) deferred[i] = deferred[i - 1];
+/******/ 				deferred[i] = [chunkIds, fn, priority];
+/******/ 				return;
+/******/ 			}
+/******/ 			var notFulfilled = Infinity;
+/******/ 			for (var i = 0; i < deferred.length; i++) {
+/******/ 				var [chunkIds, fn, priority] = deferred[i];
+/******/ 				var fulfilled = true;
+/******/ 				for (var j = 0; j < chunkIds.length; j++) {
+/******/ 					if ((priority & 1 === 0 || notFulfilled >= priority) && Object.keys(__webpack_require__.O).every((key) => (__webpack_require__.O[key](chunkIds[j])))) {
+/******/ 						chunkIds.splice(j--, 1);
+/******/ 					} else {
+/******/ 						fulfilled = false;
+/******/ 						if(priority < notFulfilled) notFulfilled = priority;
+/******/ 					}
+/******/ 				}
+/******/ 				if(fulfilled) {
+/******/ 					deferred.splice(i--, 1)
+/******/ 					var r = fn();
+/******/ 					if (r !== undefined) result = r;
+/******/ 				}
+/******/ 			}
+/******/ 			return result;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/global */
+/******/ 	(() => {
+/******/ 		__webpack_require__.g = (function() {
+/******/ 			if (typeof globalThis === 'object') return globalThis;
+/******/ 			try {
+/******/ 				return this || new Function('return this')();
+/******/ 			} catch (e) {
+/******/ 				if (typeof window === 'object') return window;
+/******/ 			}
+/******/ 		})();
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/node module decorator */
+/******/ 	(() => {
+/******/ 		__webpack_require__.nmd = (module) => {
+/******/ 			module.paths = [];
+/******/ 			if (!module.children) module.children = [];
+/******/ 			return module;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/jsonp chunk loading */
+/******/ 	(() => {
+/******/ 		// no baseURI
+/******/ 		
+/******/ 		// object to store loaded and loading chunks
+/******/ 		// undefined = chunk not loaded, null = chunk preloaded/prefetched
+/******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
+/******/ 		var installedChunks = {
+/******/ 			"home": 0
+/******/ 		};
+/******/ 		
+/******/ 		// no chunk on demand loading
+/******/ 		
+/******/ 		// no prefetching
+/******/ 		
+/******/ 		// no preloaded
+/******/ 		
+/******/ 		// no HMR
+/******/ 		
+/******/ 		// no HMR manifest
+/******/ 		
+/******/ 		__webpack_require__.O.j = (chunkId) => (installedChunks[chunkId] === 0);
+/******/ 		
+/******/ 		// install a JSONP callback for chunk loading
+/******/ 		var webpackJsonpCallback = (parentChunkLoadingFunction, data) => {
+/******/ 			var [chunkIds, moreModules, runtime] = data;
+/******/ 			// add "moreModules" to the modules object,
+/******/ 			// then flag all "chunkIds" as loaded and fire callback
+/******/ 			var moduleId, chunkId, i = 0;
+/******/ 			if(chunkIds.some((id) => (installedChunks[id] !== 0))) {
+/******/ 				for(moduleId in moreModules) {
+/******/ 					if(__webpack_require__.o(moreModules, moduleId)) {
+/******/ 						__webpack_require__.m[moduleId] = moreModules[moduleId];
+/******/ 					}
+/******/ 				}
+/******/ 				if(runtime) var result = runtime(__webpack_require__);
+/******/ 			}
+/******/ 			if(parentChunkLoadingFunction) parentChunkLoadingFunction(data);
+/******/ 			for(;i < chunkIds.length; i++) {
+/******/ 				chunkId = chunkIds[i];
+/******/ 				if(__webpack_require__.o(installedChunks, chunkId) && installedChunks[chunkId]) {
+/******/ 					installedChunks[chunkId][0]();
+/******/ 				}
+/******/ 				installedChunks[chunkId] = 0;
+/******/ 			}
+/******/ 			return __webpack_require__.O(result);
+/******/ 		}
+/******/ 		
+/******/ 		var chunkLoadingGlobal = self["webpackChunkpace_frontend"] = self["webpackChunkpace_frontend"] || [];
+/******/ 		chunkLoadingGlobal.forEach(webpackJsonpCallback.bind(null, 0));
+/******/ 		chunkLoadingGlobal.push = webpackJsonpCallback.bind(null, chunkLoadingGlobal.push.bind(chunkLoadingGlobal));
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["vendor"], () => (__webpack_require__("./islands/home/index.tsx")))
+/******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
+/******/ 	
+/******/ })()
+;
